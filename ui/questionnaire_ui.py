@@ -1,5 +1,5 @@
 import streamlit as st
-from data.questionnaire import lesquestions,lesreponses,lesrecommandations
+from data.questionnaire import lesquestions,lesreponses
 from core.etat_session import reset
 
 def  afficher_questionnaire():

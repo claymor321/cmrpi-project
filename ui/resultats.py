@@ -1,7 +1,7 @@
 import streamlit as st
 from pdf.generer_rapport import generer_pdf_bytes
 from core.etat_session import reset
-from data.questionnaire import lesrecommandations,lesquestions,lesreponses
+from data.questionnaire import lesquestions,lesreponses
 from pdf.style_pdf import STYLE_PRIORITE
 from core.moteur_recommandation import moteur_recommandations
 

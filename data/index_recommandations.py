@@ -28,9 +28,6 @@ INDEX_RECO = {nom: i for i, (nom, _) in enumerate(LISTE_RECOS)}
 
 
 def calculer_signature():
-    """Empreinte unique du jeu de recommandations actuel (ordre + contenu).
-    Sert à vérifier qu'un modèle .keras chargé a bien été entraîné sur
-    la même version de data/questionnaire.py."""
     contenu = "|".join(nom for nom, _ in LISTE_RECOS)
     return hashlib.sha256(contenu.encode("utf-8")).hexdigest()
 

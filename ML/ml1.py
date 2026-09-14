@@ -62,11 +62,44 @@ def afficher_recommandations_ia():
         return
     st.success(f"Modèle prêt ({NB_RECOS} recommandations connues).")
     changer_de_modele()
-
-
     profil_defaut = st.session_state.get("profil", [1, 1, 1, 1, 1])
-
     st.markdown("### Questionnaire")
+    st.markdown("""
+    <style>
+    [data-testid="stForm"] {
+        background-color: #14294A;
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    div[data-testid="stFormSubmitButton"] button {
+        background-color: #6C63FF;
+        color: white;
+        border-radius: 10px;
+        width: 100%;
+        font-weight: 600;
+        padding: 10px 0;
+        border: none;
+    }
+    div[data-testid="stFormSubmitButton"] button:hover {
+        background-color: #574fd6;
+    }
+    .question-badge {
+        display: inline-block;
+        background-color: #6C63FF;
+        color: white;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-bottom: 6px;
+    }
+    [data-testid="stRadio"] label {
+        padding: 4px 0;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     with st.form("form_questionnaire_ia"):
         profil = []
         for num_q in range(1, 6):
@@ -96,7 +129,6 @@ def afficher_recommandations_ia():
 
     st.markdown("### Résultats")
     recommandations = predire_recommandations(modele, profil)
-
     nb_critique = sum(1 for r in recommandations if r["priorite"] == "Critique")
     nb_elevee = sum(1 for r in recommandations if r["priorite"] == "Elevee")
     nb_moyenne = sum(1 for r in recommandations if r["priorite"] == "Moyenne")
@@ -110,62 +142,89 @@ def afficher_recommandations_ia():
     if not recommandations:
         st.success("Aucune recommandation urgente : profil déjà bien protégé.")
     else:
-        col_crit, col_elev, col_moy = st.columns(3)
-        colonnes = {"Critique": col_crit, "Elevee": col_elev, "Moyenne": col_moy}
+        ordre_priorite = ["Critique", "Elevee", "Moyenne"]
+        recommandations_triees = sorted(
+            recommandations,
+            key=lambda r: ordre_priorite.index(r["priorite"]) if r["priorite"] in ordre_priorite else len(
+                ordre_priorite)
+        )
 
-        for niveau_prio in ["Critique", "Elevee", "Moyenne"]:
+        for niveau_prio in ordre_priorite:
             groupe = [r for r in recommandations if r["priorite"] == niveau_prio]
             s = STYLE_PRIORITE.get(niveau_prio,
                                    {"bg": "#F2F3F4", "border": "#7F8C8D", "texte": "#2C3E50", "badge": "#7F8C8D"})
-            with colonnes[niveau_prio]:
-                st.markdown(f"#### {niveau_prio} ({len(groupe)})")
-                if not groupe:
-                    st.caption("Aucune recommandation.")
-                for r in groupe:
-                    st.markdown(
-                        f"""
-                        <div style="
-                            border-left: 5px solid {s['border']};
-                            border-radius: 10px;
-                            padding: 14px 16px;
-                            margin-bottom: 12px;
-                            background-color: {s['bg']};
-                            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-                        ">
-                            <div style="margin-bottom: 8px;">
-                                <span style="
-                                    font-weight: 700;
-                                    color: #1C2833;
-                                    font-size: 0.95em;
-                                    line-height: 1.4;
-                                ">{r['recommandation']}</span>
-                            </div>
-                            <div style="margin-bottom: 6px;">
-                                <span style="
-                                    background-color: {s['border']};
-                                    color: #FFFFFF;
-                                    font-size: 0.72em;
-                                    font-weight: 700;
-                                    padding: 3px 10px;
-                                    border-radius: 20px;
-                                    white-space: nowrap;
-                                ">{r['priorite']}</span>
-                            </div>
-                            <div style="
-                                font-size: 0.8em;
-                                color: {s['texte']};
-                                font-weight: 600;
-                            ">
-                                📘 Réf. guide : {r['guide']}
-                            </div>
+            st.markdown(f"#### {niveau_prio} ({len(groupe)})")
+            if not groupe:
+                st.caption("Aucune recommandation.")
+            for r in groupe:
+                st.markdown(
+                    f"""
+                    <div style="
+                        border-left: 5px solid {s['border']};
+                        border-radius: 10px;
+                        padding: 14px 16px;
+                        margin-bottom: 12px;
+                        background-color: {s['bg']};
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+                    ">
+                        <div style="margin-bottom: 8px;">
+                            <span style="
+                                font-weight: 700;
+                                color: #1C2833;
+                                font-size: 0.95em;
+                                line-height: 1.4;
+                            ">{r['recommandation']}</span>
                         </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                        <div style="margin-bottom: 6px;">
+                            <span style="
+                                background-color: {s['border']};
+                                color: #FFFFFF;
+                                font-size: 0.72em;
+                                font-weight: 700;
+                                padding: 3px 10px;
+                                border-radius: 20px;
+                                white-space: nowrap;
+                            ">{r['priorite']}</span>
+                        </div>
+                        <div style="
+                            font-size: 0.8em;
+                            color: {s['texte']};
+                            font-weight: 600;
+                        ">
+                            📘 Réf. guide : {r['guide']}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
     st.divider()
     entreprise = st.session_state.get("entreprise", {})
     if entreprise and recommandations:
-        pdf_buffer = generer_pdf_bytes_ia(entreprise, profil, recommandations)
+        pdf_buffer = generer_pdf_bytes_ia(entreprise,recommandations)
+        st.markdown(
+            """
+            <style>
+            button[data-testid^="stBaseButton-secondary"], 
+            button[data-testid^="stBaseButton-primary"] {
+                background: linear-gradient(135deg, #d9a441, #b3812f) !important;
+                color: #1c1408 !important;
+                font-weight: 700 !important;
+                border: none !important;
+                border-radius: 8px !important;
+                padding: 10px 22px !important;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.35) !important;
+                transition: transform 0.08s ease, filter 0.15s ease;
+            }
+            button[data-testid^="stBaseButton"]:hover {
+                filter: brightness(1.1);
+            }
+            button[data-testid^="stBaseButton"]:active {
+                transform: translateY(1px);
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
         st.download_button(
             "📄 Télécharger le rapport IA (PDF)",
             data=pdf_buffer,

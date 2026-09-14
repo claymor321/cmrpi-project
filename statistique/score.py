@@ -131,13 +131,6 @@ def rapport_complet(profil):
     print("\n[1] Score de risque pondéré par question\n")
     for num_q in range(1, 6):
         print(f"  Q{num_q} : {scores_q[num_q]}")
-
-
-
-
-
-
-
     risque = score_risque_global(profil)
     maturite = score_maturite(profil)
     niveau = classifier_niveau_risque(risque["pct_risque"])

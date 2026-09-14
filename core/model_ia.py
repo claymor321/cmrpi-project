@@ -9,9 +9,7 @@ MODELE_PATH_DEFAUT = "modeles_recommandations.keras"
 
 
 def _verifier_compatibilite(chemin_meta):
-    """Compare la signature du modèle chargé à la version actuelle des
-    recommandations. Affiche un avertissement Streamlit en cas d'écart,
-    sans bloquer l'utilisation (l'utilisateur reste décisionnaire)."""
+
     if not chemin_meta or not os.path.exists(chemin_meta):
         st.warning(
             "⚠️ Aucun fichier de métadonnées (`.meta.json`) trouvé pour ce modèle. "
@@ -68,9 +66,7 @@ def _charger_depuis_bytes(fichier_bytes, nom_fichier):
 def obtenir_modele(cle_widget="upload_modele_ia"):
     if "modele_ia" in st.session_state:
         return st.session_state.modele_ia
-
     force_upload = st.session_state.get("forcer_upload_modele", False)
-
     if not force_upload and os.path.exists(MODELE_PATH_DEFAUT):
         try:
             modele = _charger_depuis_chemin(MODELE_PATH_DEFAUT)
@@ -82,17 +78,14 @@ def obtenir_modele(cle_widget="upload_modele_ia"):
         st.caption(f"✅ Modèle chargé automatiquement depuis `{MODELE_PATH_DEFAUT}`.")
         _verifier_compatibilite(MODELE_PATH_DEFAUT + ".meta.json")
         return modele
-
     fichier_modele = st.file_uploader("Modèle entraîné (.keras)", type=["keras", "h5"], key=cle_widget)
     if fichier_modele is None:
         return None
-
     try:
         modele = _charger_depuis_bytes(fichier_modele.getvalue(), fichier_modele.name)
     except RuntimeError as e:
         st.error(f"🚫 {e}")
         return None
-
     st.session_state.modele_ia = modele
     st.session_state.id_modele_actuel = fichier_modele.name
     st.session_state.forcer_upload_modele = False
@@ -105,7 +98,30 @@ def obtenir_modele(cle_widget="upload_modele_ia"):
 
 
 def changer_de_modele():
-    if st.button("🔄 Changer de modèle"):
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stButton"] button {
+            background: linear-gradient(135deg, #4a6fa5, #2f4a73);
+            color: #f2ead2;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 22px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+            transition: transform 0.08s ease, filter 0.15s ease;
+        }
+        div[data-testid="stButton"] button:hover {
+            filter: brightness(1.15);
+        }
+        div[data-testid="stButton"] button:active {
+            transform: translateY(1px);
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    if st.button(" Changer de modèle"):
         st.session_state.pop("modele_ia", None)
         st.session_state["forcer_upload_modele"] = True
         st.rerun()

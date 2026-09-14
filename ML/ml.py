@@ -10,8 +10,6 @@ import datetime as dt
 from data.index_recommandations import SIGNATURE_RECOS
 import os
 
-
-
 def construire_cible(profil, forcer_critique=False):
     cible = np.zeros(NB_RECOS, dtype=int)  # 0 = Absente par défaut
     for num_q, num_r in enumerate(profil, start=1):

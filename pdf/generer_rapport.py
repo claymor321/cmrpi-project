@@ -7,7 +7,7 @@ from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable)
 from data.questionnaire import lesquestions,lesreponses,lesrecommandations
 from io import BytesIO
-from pdf.style_pdf import STYLE_PRIORITE,COULEUR_PDF,FOND_PDF
+from pdf.style_pdf import COULEUR_PDF,FOND_PDF
 
 
 def generer_pdf_bytes(entreprise, profil):
@@ -82,7 +82,7 @@ def generer_pdf_bytes(entreprise, profil):
     doc.build(story)
     buffer.seek(0)
     return buffer
-def generer_pdf_bytes_ia(entreprise, profil, recommandations):
+def generer_pdf_bytes_ia(entreprise,recommandations):
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer, pagesize=A4,
@@ -104,7 +104,7 @@ def generer_pdf_bytes_ia(entreprise, profil, recommandations):
     story.append(Paragraph("Prédictions du réseau de neurones — guide CMRPI/AUSIM", style_soustitre))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#D5D8DC"), spaceAfter=10))
 
-    # Bloc entreprise identique au rapport questionnaire
+
     story.append(Paragraph(f"<b>Entreprise :</b> {entreprise['nom']}", style_soustitre))
     story.append(
         Paragraph(f"<b>Secteur :</b> {entreprise['secteur']} &nbsp;|&nbsp; <b>Taille :</b> {entreprise['taille']}",

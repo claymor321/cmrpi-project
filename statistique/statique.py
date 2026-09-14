@@ -152,6 +152,41 @@ def graphique_matrice_confusion(y_true, y_pred):
 
 
 def afficher_statistique_modele():
+    st.markdown("""
+    <style>
+    [data-testid="stMetric"] {
+        background-color: #14294A;
+        border: 1px solid #2ED9C3;
+        border-radius: 14px;
+        padding: 18px 10px;
+        box-shadow: 0 4px 12px rgba(46, 217, 195, 0.12);
+        text-align: center;
+    }
+    [data-testid="stMetricLabel"] {
+        color: #2ED9C3 !important;
+        font-weight: 600;
+        justify-content: center;
+    }
+    [data-testid="stMetricValue"] {
+        color: #EAF2FB !important;
+        font-size: 26px;
+    }
+    table {
+        background-color: #14294A !important;
+        border-radius: 12px !important;
+        overflow: hidden;
+    }
+    thead tr th {
+        background-color: #2ED9C3 !important;
+        color: #081527 !important;
+        font-weight: 700 !important;
+    }
+    tbody tr td {
+        color: #EAF2FB !important;
+        border-color: #1c3860 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     st.caption("Évalue le modèle entraîné sur l'ensemble des 1024 profils possibles "
                "(4 réponses × 5 questions), en comparant ses prédictions aux règles du guide.")
 
@@ -201,9 +236,50 @@ def afficher_statistique_modele():
 # Page Streamlit (point d'entrée appelé depuis app.py)
 # ===========================================================================
 def afficher_statistique():
+    st.markdown("""
+    <style>
+    [data-baseweb="tab-list"] {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    button[data-baseweb="tab"] {
+        flex: 1;
+        justify-content: center;
+        background-color: #14294A;
+        border-radius: 10px 10px 0 0;
+        padding: 10px 20px;
+        color: #EAF2FB !important;
+        font-weight: 600;
+        border: 1px solid #2ED9C3;
+        border-bottom: none;
+    }
+    button[data-baseweb="tab"]:hover {
+        background-color: #1c3860;
+        color: #2ED9C3 !important;
+    }
+    button[data-baseweb="tab"][aria-selected="true"] {
+        background-color: #2ED9C3;
+        color: #081527 !important;
+    }
+    [data-baseweb="tab-highlight"] {
+        background-color: #2ED9C3 !important;
+    }
+    [data-baseweb="tab-border"] {
+        background-color: #14294A !important;
+    }
+    [data-baseweb="tab-panel"] {
+        background-color: #14294A;
+        border-radius: 0 12px 12px 12px;
+        padding: 25px;
+        border: 1px solid #2ED9C3;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     st.subheader("📊 Statistiques")
-
     onglet_donnees, onglet_modele = st.tabs(["📁 Données du questionnaire", "🤖 Performance du modèle IA"])
+    st.divider()
 
     with onglet_donnees:
         afficher_statistique_donnees()
